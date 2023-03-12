@@ -27,10 +27,11 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
+        return windows;
+        /*throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
           'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        );*/
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -68,6 +69,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'project-valinity.appspot.com',
     iosClientId: '213146812952-lkecg8m2koa4ootflqkvi0boajnot7vp.apps.googleusercontent.com',
     iosBundleId: 'com.example.project',
+  );
+
+    static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyD6jJ22J3-uT30bHGD6wg5iKR9XPq7XnU8',
+    appId: '1:213146812952:ios:0868e81fb43f9ec275f96d',
+    messagingSenderId: '213146812952',
+    projectId: 'project-valinity',
+    storageBucket: 'project-valinity.appspot.com',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

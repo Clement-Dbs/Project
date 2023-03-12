@@ -213,7 +213,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
                           String passwordVerif = passwordController.value.text;
                           String errorMessage = '';
-                          if (passwordVerif.length < 8 || !passwordVerif.contains(new RegExp(r'[A-Z]')) || !passwordVerif.contains(new RegExp(r'[0-9]')) || !passwordVerif.contains(new RegExp(r'[!@#\$&*~?]'))) {
+                          if (passwordVerif.length < 8 || !passwordVerif.contains(RegExp(r'[A-Z]')) || !passwordVerif.contains(RegExp(r'[0-9]')) || !passwordVerif.contains(RegExp(r'[!,@#\$&*~?]'))) {
                             errorMessage += ' Le mot de passe doit contenir au moins: '
                                 '- 8 caractères '
                                 '- une majuscule '
