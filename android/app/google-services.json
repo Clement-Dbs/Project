@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "213146812952",
+    "project_id": "project-valinity",
+    "storage_bucket": "project-valinity.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213146812952:android:cf797433b6d5048775f96d",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213146812952-1t3vgd3r541188ipibg4somif7uje8sf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdCWcQ77POkYNE4cr8-9Epl32IHG0zlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213146812952-1t3vgd3r541188ipibg4somif7uje8sf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
