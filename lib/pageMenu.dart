@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 
 class MenuPage extends StatefulWidget {
@@ -17,12 +20,21 @@ class _MenuPageState extends State<MenuPage> {
     loadData();
   }
 
-  String? imageUrl;
+  String imageUrl ="";
   String apiUrl = 'https://store.steampowered.com/api/storesearch/?term=Destiny2:%20Lightfall&cc=EN&l=en';
 
-  Future<String> getTinyImage() async {
-    http.Response response = await http.get(Uri.parse(apiUrl));
+  void getTinyImage() async {
 
+    final uri = Uri.parse(apiUrl);
+    final resp = await http.get(uri);
+    final body = resp.body;
+    final json = jsonDecode(body);
+    setState(() {
+      imageUrl = json["items"][0]["tiny_image"];
+    });
+
+    
+    /*http.Response response = await http.get(Uri.parse(apiUrl));
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       var results = jsonResponse['items'];
@@ -31,14 +43,12 @@ class _MenuPageState extends State<MenuPage> {
       return tinyImageUrl;
     } else {
       throw Exception('Failed to load data');
-    }
+    }*/
   }
 
+
   Future<void> loadData() async {
-    String url = await getTinyImage();
-    setState(() {
-      imageUrl = url;
-    });
+    getTinyImage();
   }
 
   @override
@@ -62,6 +72,7 @@ class _MenuPageState extends State<MenuPage> {
           icon: Icon(Icons.logout),
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
+            // ignore: use_build_context_synchronously
             Navigator.pushReplacementNamed(context, '/');
           },
         ),
@@ -70,7 +81,7 @@ class _MenuPageState extends State<MenuPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.favorite_border,
                   color: Colors.white,
                 ),
@@ -78,8 +89,9 @@ class _MenuPageState extends State<MenuPage> {
                   //Fonctionnement des likes
                 },
               ),
-              SizedBox(width: 14),
+              const SizedBox(width: 14),
               IconButton(
+                // ignore: prefer_const_constructors
                 icon: Icon(
                   Icons.star_border,
                   color: Colors.white,
@@ -88,7 +100,7 @@ class _MenuPageState extends State<MenuPage> {
                   //Fonctionnement wishlist
                 },
               ),
-              SizedBox(width: 14),
+              const SizedBox(width: 14),
             ],
           ),
         ],
@@ -155,7 +167,7 @@ class _MenuPageState extends State<MenuPage> {
             child: SizedBox(
               height: 170,
               child: Container(
-                child: imageUrl == null ? CircularProgressIndicator() : Image.network(imageUrl!),
+                child: imageUrl == null ? const CircularProgressIndicator() : Image.network(imageUrl),
               ),
             ),
           ),
