@@ -5,14 +5,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:project/gameListBloc.dart';
 
-class GameLike {
+class GameFav {
   final int id;
   final String name;
   final String imageUrl;
   final String firstBundlePrice;
   final List<String> developers;
 
-  GameLike({
+  GameFav({
     required this.id,
     required this.name,
     required this.imageUrl,
@@ -21,70 +21,75 @@ class GameLike {
   });
 }
 
-abstract class LikeManagementState {}
-class FetchLikeFull extends LikeManagementState {
-  final List<GameLike> gamesList;
-  FetchLikeFull(this.gamesList);
+abstract class FavManagementState {}
+class FetchFavFull extends FavManagementState {
+  final List<GameFav> gamesList;
+  FetchFavFull(this.gamesList);
 }
-class FetchLikeEmpty extends LikeManagementState {}
-class ErrorFetchLike extends LikeManagementState {}
-class PostLike extends LikeManagementState {}
-class PostLikeAlready extends LikeManagementState {}
-class ErrorLike extends LikeManagementState {}
-class InitStateLike extends LikeManagementState {}
-class FetchGameLike extends LikeManagementState {
+class FetchFavEmpty extends FavManagementState {}
+class ErrorFetchFav extends FavManagementState {}
+class PostFav extends FavManagementState {}
+class PostFavAlready extends FavManagementState {}
+class ErrorFav extends FavManagementState {}
+class InitStateFav extends FavManagementState {}
+class FetchGameFav extends FavManagementState {
   final Game gameFetch;
-  FetchGameLike(this.gameFetch);
+  FetchGameFav(this.gameFetch);
 }
-class FetchGameLikeNormal extends LikeManagementState {}
+class FetchGameFavNormal extends FavManagementState {}
+class DeleteSuccess extends FavManagementState {}
+class DeleteError extends FavManagementState {}
 
-abstract class LikeManagementEvent {}
-class FetchLikeEvent extends LikeManagementEvent {}
-class ResetStateEvent extends LikeManagementEvent {}
-class PostLikeEvent extends LikeManagementEvent {
+abstract class FavManagementEvent {}
+class FetchFavEvent extends FavManagementEvent {}
+class ResetStateEventFav extends FavManagementEvent {}
+class PostFavEvent extends FavManagementEvent {
   final int id;
-  PostLikeEvent(this.id);
+  PostFavEvent(this.id);
 }
-class DeleteLikeEvent extends LikeManagementEvent {}
-class FetchGameLikeEvent extends LikeManagementEvent {
+class DeleteFavEvent extends FavManagementEvent {
   final int id;
-  FetchGameLikeEvent(this.id);
+  DeleteFavEvent(this.id);
+}
+class FetchGameFavEvent extends FavManagementEvent {
+  final int id;
+  FetchGameFavEvent(this.id);
 }
 
-class LikeManagementBloc extends Bloc<LikeManagementEvent, LikeManagementState> {
-  LikeManagementBloc() : super(_getInitState()) {
-    on<FetchLikeEvent>(_onFetchLike);
-    on<ResetStateEvent>(_onResetStateLike);
-    on<PostLikeEvent>(_onPostLike);
-    on<DeleteLikeEvent>(_onDeleteLike);
-    on<FetchGameLikeEvent>(_onFetchGameLike);
+class FavManagementBloc extends Bloc<FavManagementEvent, FavManagementState> {
+  FavManagementBloc() : super(_getInitState()) {
+    on<FetchFavEvent>(_onFetchFav);
+    on<ResetStateEventFav>(_onResetStateFav);
+    on<PostFavEvent>(_onPostFav);
+    on<DeleteFavEvent>(_onDeleteFav);
+    on<FetchGameFavEvent>(_onFetchGameFav);
   }
 
-  static LikeManagementState _getInitState() {
-    final state = InitStateLike();
+  static FavManagementState _getInitState() {
+    final state = InitStateFav();
     return state;
   }
 }
 
-Future<void> _onResetStateLike(event, emit) async {
-  final state = InitStateLike();
+Future<void> _onResetStateFav(event, emit) async {
+  final state = InitStateFav();
   emit(state);
 }
 
-Future<void> _onFetchLike(event, emit) async {
+Future<void> _onFetchFav(event, emit) async {
   final currentUser = FirebaseAuth.instance.currentUser;
-  final gamesList = <GameLike>[];
+  final gamesList = <GameFav>[];
 
   if (currentUser != null) {
-    final likesCollection = FirebaseFirestore.instance
+    final FavsCollection = FirebaseFirestore.instance
         .collection("users")
         .doc(currentUser.uid)
-        .collection("likes");
+        .collection("Favs");
 
-    final likesSnapshot = await likesCollection.get();
-    final likes = likesSnapshot.docs.map((doc) => doc.get("postId").toInt()).toList();
+    final FavsSnapshot = await FavsCollection.get();
+    final Favs = FavsSnapshot.docs.map((doc) => doc.get("postId").toInt()).toList();
 
-    for (var id in likes) {
+    for (var id in Favs) {
       final response = await http.get(Uri.parse(
           'https://store.steampowered.com/api/appdetails?appids=$id&cc=fr'));
       if (response.statusCode == 200) {
@@ -92,7 +97,7 @@ Future<void> _onFetchLike(event, emit) async {
         String idToS = id.toString();
         final gameData = gameJsonResponse['$idToS']['data'];
         if (gameData != null) {
-          final game = GameLike(
+          final game = GameFav(
             id: gameData['steam_appid'] as int,
             name: gameData['name'] as String,
             imageUrl: gameData['header_image'] as String,
@@ -112,31 +117,31 @@ Future<void> _onFetchLike(event, emit) async {
         }
       }
     }
-    final state = gamesList.isEmpty ? FetchLikeEmpty() : FetchLikeFull(gamesList);
+    final state = gamesList.isEmpty ? FetchFavEmpty() : FetchFavFull(gamesList);
     emit(state);
 
   } else {
-    final state = ErrorFetchLike();
+    final state = ErrorFetchFav();
     emit(state);
   }
 }
 
-Future<void> _onPostLike(event, emit) async {
+Future<void> _onPostFav(event, emit) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     final uid = user.uid;
-    final postId = (event as PostLikeEvent).id;
+    final postId = (event as PostFavEvent).id;
 
     // Vérifier si une entrée avec le même postId existe déjà
     final querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection('likes')
+        .collection('Favs')
         .where('postId', isEqualTo: postId)
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      final state = PostLikeAlready();
+      final state = PostFavAlready();
       emit(state);
     }
     else{
@@ -144,27 +149,41 @@ Future<void> _onPostLike(event, emit) async {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
-          .collection('likes')
+          .collection('Favs')
           .add({
         'postId': postId,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      final state = PostLike();
+      final state = PostFav();
       emit(state);
     }
   } else {
-    final state = ErrorLike();
+    final state = ErrorFav();
     emit(state);
   }
 }
 
-Future<void> _onDeleteLike(event, emit) async {
-  final state = InitStateLike();
-  emit(state);
+Future<void> _onDeleteFav(event, emit) async {
+  int id = (event as DeleteFavEvent).id;
+  final user = FirebaseAuth.instance.currentUser;
+
+  if(user != null){
+    CollectionReference likesRef = FirebaseFirestore.instance.collection('users').doc(user.uid).collection('Favs');
+    QuerySnapshot snapshot = await likesRef.where('postId', isEqualTo: id).get();
+    snapshot.docs.forEach((doc) {
+      doc.reference.delete();
+    });
+    final state = DeleteSuccess();
+    emit(state);
+  }
+  else{
+    final state = DeleteError();
+    emit(state);
+  }
 }
 
-Future<void> _onFetchGameLike(event, emit) async {
-  int id = (event as FetchGameLikeEvent).id;
+Future<void> _onFetchGameFav(event, emit) async {
+  int id = (event as FetchGameFavEvent).id;
 
   final gameResponse = await http.get(Uri.parse(
       'https://store.steampowered.com/api/appdetails?appids=$id&cc=fr'));
@@ -195,12 +214,12 @@ Future<void> _onFetchGameLike(event, emit) async {
             .toList()
             : [],
       );
-      final state = FetchGameLike(game);
+      final state = FetchGameFav(game);
       emit(state);
     }
   }
   else {
-    final state = FetchGameLikeNormal();
+    final state = FetchGameFavNormal();
     emit(state);
   }
 }

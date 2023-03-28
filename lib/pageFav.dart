@@ -1,33 +1,33 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:project/likeBloc.dart';
+import 'package:project/favBloc.dart';
 import 'package:project/pageGameDetails.dart';
 
-class LikePage extends StatefulWidget {
-  const LikePage({Key? key}) : super(key: key);
+class FavPage extends StatefulWidget {
+  const FavPage({Key? key}) : super(key: key);
   @override
-  _LikePageState createState() => _LikePageState();
+  _FavPageState createState() => _FavPageState();
 }
 
-class _LikePageState extends State<LikePage> {
+class _FavPageState extends State<FavPage> {
 
   @override
   void initState() {
     super.initState();
-    context.read<LikeManagementBloc>().add(FetchLikeEvent());
+    context.read<FavManagementBloc>().add(FetchFavEvent());
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context.read<LikeManagementBloc>().add(FetchLikeEvent());
+    context.read<FavManagementBloc>().add(FetchFavEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LikeManagementBloc, LikeManagementState>(
+    return BlocListener<FavManagementBloc, FavManagementState>(
       listener: (context, state) {
-        if (state is FetchGameLike) {
+        if (state is FetchGameFav) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -43,7 +43,7 @@ class _LikePageState extends State<LikePage> {
             backgroundColor: const Color(0xFF1a2025),
             elevation: 8.0,
             title: const Text(
-              'Mes Likes',
+              'Ma liste de souhaits',
               style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'OpenSans',
@@ -62,9 +62,9 @@ class _LikePageState extends State<LikePage> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             margin: EdgeInsets.only(top: 25),
-            child: BlocBuilder<LikeManagementBloc, LikeManagementState>(
+            child: BlocBuilder<FavManagementBloc, FavManagementState>(
                 builder: (context, state){
-                  if(state is FetchLikeFull){
+                  if(state is FetchFavFull){
                     return ListView.builder(
                       itemCount: state.gamesList.length,
                       itemBuilder: (context, index) {
@@ -124,8 +124,8 @@ class _LikePageState extends State<LikePage> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          BlocProvider.of<LikeManagementBloc>(context).add(
-                                            FetchGameLikeEvent(state.gamesList[index].id),
+                                          BlocProvider.of<FavManagementBloc>(context).add(
+                                            FetchGameFavEvent(state.gamesList[index].id),
                                           );
                                         },
                                         child: Container(
@@ -149,7 +149,7 @@ class _LikePageState extends State<LikePage> {
                       },
                     );
                   }
-                  else if(state is FetchLikeEmpty){
+                  else if(state is FetchFavEmpty){
                     return Container(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
@@ -159,10 +159,10 @@ class _LikePageState extends State<LikePage> {
                         children: [
                           Align(
                             child: Icon(
-                              Icons.favorite,
-                              size: 100, // taille de l'icône
-                              color: Colors.white, // couleur de l'icône
-                            ),
+                              Icons.star,
+                              color: Colors.white,
+                              size: 100,
+                            )
                           ),
                           Align(
                             child: Container(
@@ -187,7 +187,7 @@ class _LikePageState extends State<LikePage> {
                               child: const SizedBox(
                                 width: 250,
                                 child: Text(
-                                  "Cliquez sur le coeur pour en rajouter.",
+                                  "Cliquez sur l'étoile pour en rajouter.",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontFamily: 'OpenSans',
