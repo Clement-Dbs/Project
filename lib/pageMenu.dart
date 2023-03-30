@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:project/gameListBloc.dart';
@@ -5,6 +6,15 @@ import 'package:project/navigatorBloc.dart';
 import 'package:project/pageGameDetails.dart';
 import 'package:project/searchBloc.dart';
 import 'package:project/pageSearch.dart';
+=======
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:developer' as developer;
+>>>>>>> 187125cec79e88fe269aa036cef14a8955666e66
 
 
 class MenuPage extends StatefulWidget {
@@ -23,6 +33,7 @@ class _MenuPageState extends State<MenuPage> {
     searchStringController.clear();
   }
 
+<<<<<<< HEAD
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,6 +44,37 @@ class _MenuPageState extends State<MenuPage> {
   void dispose() {
     searchStringController.dispose();
     super.dispose();
+=======
+  String imageUrl ="";
+  String apiUrl = 'https://store.steampowered.com/api/storesearch/?term=Destiny2:%20Lightfall&cc=EN&l=en';
+
+  void getTinyImage() async {
+
+    final uri = Uri.parse(apiUrl);
+    final resp = await http.get(uri);
+    final body = resp.body;
+    final json = jsonDecode(body);
+    setState(() {
+      imageUrl = json["items"][0]["tiny_image"];
+    });
+
+    
+    /*http.Response response = await http.get(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      var results = jsonResponse['items'];
+      var firstResult = results[0];
+      var tinyImageUrl = firstResult['tiny_image'];
+      return tinyImageUrl;
+    } else {
+      throw Exception('Failed to load data');
+    }*/
+  }
+
+
+  Future<void> loadData() async {
+    getTinyImage();
+>>>>>>> 187125cec79e88fe269aa036cef14a8955666e66
   }
 
   @override
@@ -52,11 +94,20 @@ class _MenuPageState extends State<MenuPage> {
             fontSize: 24.0,
           ),
         ),
+<<<<<<< HEAD
         leading: BlocListener<UserBloc, CState>(
           listener: (context, state) {
             if (state is Deconnexion) {
               Navigator.pushReplacementNamed(context, '/');
             }
+=======
+        leading: IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacementNamed(context, '/');
+>>>>>>> 187125cec79e88fe269aa036cef14a8955666e66
           },
           child: IconButton(
             icon: Icon(Icons.logout),
@@ -377,6 +428,18 @@ class _MenuPageState extends State<MenuPage> {
                     },
                   ),
                 ),
+<<<<<<< HEAD
+=======
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16, left: 16, bottom: 16),
+            child: SizedBox(
+              height: 170,
+              child: Container(
+                child: imageUrl == null ? const CircularProgressIndicator() : Image.network(imageUrl),
+>>>>>>> 187125cec79e88fe269aa036cef14a8955666e66
               ),
             ],
           ),

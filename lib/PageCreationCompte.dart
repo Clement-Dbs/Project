@@ -207,6 +207,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       ),
                     ),
                   ),
+<<<<<<< HEAD
                   Align(
                     child: Container(
                       margin: const EdgeInsets.only(top:5),
@@ -280,6 +281,85 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                             String emailVerif = emailController.value.text;
                             bool isEmailValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailVerif);
                             if (!isEmailValid) {
+=======
+                ),
+                Align(
+                  child: Container(
+                    margin: const EdgeInsets.only(top:60),
+                    child: SizedBox(
+                      height: 40.0,
+                      width: 300,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          String nameVerif = nameController.value.text;
+
+                          String emailVerif = emailController.value.text;
+                          bool isEmailValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailVerif);
+                          if (!isEmailValid) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Erreur'),
+                                  content: Text("L'e-mail n'est pas de la forme: -----@-----.--"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            return;
+                          }
+
+                          String passwordVerif = passwordController.value.text;
+                          String errorMessage = '';
+                          if (passwordVerif.length < 8 || !passwordVerif.contains(RegExp(r'[A-Z]')) || !passwordVerif.contains(RegExp(r'[0-9]')) || !passwordVerif.contains(RegExp(r'[!,@#\$&*~?]'))) {
+                            errorMessage += ' Le mot de passe doit contenir au moins: '
+                                '- 8 caractères '
+                                '- une majuscule '
+                                '- un chiffre '
+                                '- un caractère spécial.';
+                          }
+                          if (errorMessage.isNotEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Erreur'),
+                                  content: Text(errorMessage),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            return;
+                          }
+
+                          try {
+                            final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                              email: emailVerif,
+                              password: passwordVerif,
+                            );
+
+                            final firestoreInstance = FirebaseFirestore.instance;
+                            await firestoreInstance.collection("users").doc(credential.user?.uid).set({
+                              "name": nameVerif,
+                              "email": emailVerif,
+                            });
+
+                            Navigator.pop(context);
+
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'weak-password') {
+                            } else if (e.code == 'email-already-in-use') {
+>>>>>>> 187125cec79e88fe269aa036cef14a8955666e66
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
