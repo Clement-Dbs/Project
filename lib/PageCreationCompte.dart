@@ -207,7 +207,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       ),
                     ),
                   ),
-<<<<<<< HEAD
                   Align(
                     child: Container(
                       margin: const EdgeInsets.only(top:5),
